@@ -1,10 +1,11 @@
 package br.com.gile.livrariaapi.api.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-@Getter
-@Setter
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class LivroDTO {
     private Long id;
     private String titulo;

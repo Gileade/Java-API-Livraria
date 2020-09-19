@@ -1,12 +1,18 @@
 package br.com.gile.livrariaapi.api.resource;
 
+import br.com.gile.livrariaapi.api.dto.LivroDTO;
+import br.com.gile.livrariaapi.api.model.entity.Livro;
+import br.com.gile.livrariaapi.service.LivroService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.BDDMockito;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -28,11 +34,22 @@ public class LivroControllerTest {
     @Autowired
     MockMvc mvc;
 
+    @MockBean
+    LivroService service;
+
     @Test
     @DisplayName("Deve criar um livro com sucesso.")
     public void criaLivroTest() throws Exception{
-        //Cria um objeto Json
-        String json = new ObjectMapper().writeValueAsString(null);
+        //Cria um Objeto Livro DTO
+        LivroDTO dto = LivroDTO.builder().autor("Gile").titulo("God of War").isbn("001").build();
+        //Cria um livro Mockado
+        Livro livroSalvo = Livro.builder().id(10l).autor("Gile").titulo("God of War").isbn("001").build();
+
+        //Usa um Mock para retornar o livro que foi supostamente salvo
+        BDDMockito.given(service.save(Mockito.any(Livro.class))).willReturn(livroSalvo);
+
+        //Cria um objeto Json apartir dos dados do DTO
+        String json = new ObjectMapper().writeValueAsString(dto);
 
         //Faz uma requisição post para (LIVRO_API = "/api/livros")
         //Aceitando um arquivo JSON
@@ -51,10 +68,10 @@ public class LivroControllerTest {
         //E que retorne no Json de retorno uma propriedade isbn, com o valor 123212
         mvc.perform(request)
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("id").isNotEmpty())
-                .andExpect(jsonPath("titulo").value("Meu Livro"))
-                .andExpect(jsonPath("autor").value("Autor"))
-                .andExpect(jsonPath("isbn").value("123212"))
+                .andExpect(jsonPath("id").value(10l))
+                .andExpect(jsonPath("titulo").value(dto.getTitulo()))
+                .andExpect(jsonPath("autor").value(dto.getAutor()))
+                .andExpect(jsonPath("isbn").value(dto.getIsbn()))
         ;
     }
 
