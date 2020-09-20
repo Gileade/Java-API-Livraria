@@ -6,6 +6,8 @@ import br.com.gile.livrariaapi.model.repository.LivroRepository;
 import br.com.gile.livrariaapi.service.LivroService;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class LivroServiceImpl implements LivroService {
 
@@ -21,5 +23,10 @@ public class LivroServiceImpl implements LivroService {
             throw new BusinessException("Isbn já cadastrado.");
         }
         return repository.save(livro);
+    }
+
+    @Override
+    public Optional<Livro> getById(Long id) {
+        return Optional.empty();
     }
 }
