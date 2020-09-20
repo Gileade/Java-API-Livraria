@@ -2,8 +2,8 @@ package br.com.gile.livrariaapi.api.resource;
 
 import br.com.gile.livrariaapi.api.dto.LivroDTO;
 import br.com.gile.livrariaapi.api.exception.ApiErrors;
-import br.com.gile.livrariaapi.api.model.entity.Livro;
 import br.com.gile.livrariaapi.exception.BusinessException;
+import br.com.gile.livrariaapi.model.entity.Livro;
 import br.com.gile.livrariaapi.service.LivroService;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;

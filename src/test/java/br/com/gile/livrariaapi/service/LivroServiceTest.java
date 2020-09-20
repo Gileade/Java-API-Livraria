@@ -1,8 +1,8 @@
 package br.com.gile.livrariaapi.service;
 
-import br.com.gile.livrariaapi.api.model.entity.Livro;
 import br.com.gile.livrariaapi.exception.BusinessException;
-import br.com.gile.livrariaapi.model.repository.livroRepository;
+import br.com.gile.livrariaapi.model.entity.Livro;
+import br.com.gile.livrariaapi.model.repository.LivroRepository;
 import br.com.gile.livrariaapi.service.impl.LivroServiceImpl;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,7 +23,7 @@ public class LivroServiceTest {
     LivroService service;
 
     @MockBean
-    livroRepository repository;
+    LivroRepository repository;
 
     @BeforeEach
     public void setUp(){

@@ -1,12 +1,10 @@
 package br.com.gile.livrariaapi.api.resource;
 
 import br.com.gile.livrariaapi.api.dto.LivroDTO;
-import br.com.gile.livrariaapi.api.model.entity.Livro;
 import br.com.gile.livrariaapi.exception.BusinessException;
+import br.com.gile.livrariaapi.model.entity.Livro;
 import br.com.gile.livrariaapi.service.LivroService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,7 +21,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.util.regex.Matcher;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;

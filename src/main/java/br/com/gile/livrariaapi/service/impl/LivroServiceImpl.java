@@ -1,17 +1,17 @@
 package br.com.gile.livrariaapi.service.impl;
 
-import br.com.gile.livrariaapi.api.model.entity.Livro;
 import br.com.gile.livrariaapi.exception.BusinessException;
-import br.com.gile.livrariaapi.model.repository.livroRepository;
+import br.com.gile.livrariaapi.model.entity.Livro;
+import br.com.gile.livrariaapi.model.repository.LivroRepository;
 import br.com.gile.livrariaapi.service.LivroService;
 import org.springframework.stereotype.Service;
 
 @Service
 public class LivroServiceImpl implements LivroService {
 
-    private livroRepository repository;
+    private LivroRepository repository;
 
-    public LivroServiceImpl(livroRepository repository) {
+    public LivroServiceImpl(LivroRepository repository) {
         this.repository = repository;
     }
 
