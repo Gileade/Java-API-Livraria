@@ -14,12 +14,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 
 import java.util.Optional;
@@ -139,6 +141,7 @@ public class LivroControllerTest {
                 .get(LIVRO_API.concat("/" + id))
                 .accept(MediaType.APPLICATION_JSON);
 
+        //Verificação
         mvc.perform(request)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("id").value(id))
@@ -161,8 +164,24 @@ public class LivroControllerTest {
                 .get(LIVRO_API.concat("/" + id))
                 .accept(MediaType.APPLICATION_JSON);
 
+        //Verificação
         mvc.perform(request)
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("Deve deletar um livro.")
+    public void deletaLivroTest() throws Exception{
+        //Cenário
+        BDDMockito.given(service.getById(Mockito.anyLong())).willReturn(Optional.of(Livro.builder().id(1l).build()));
+
+        //Execução
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .delete(LIVRO_API.concat("/" + 1));
+
+        //Verificação
+        mvc.perform(request)
+                .andExpect(status().isNoContent());
     }
 
     private LivroDTO criaNovoLivro() {
