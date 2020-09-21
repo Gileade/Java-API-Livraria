@@ -148,6 +148,23 @@ public class LivroControllerTest {
         ;
     }
 
+    @Test
+    @DisplayName("Deve retornar resource not found quando o livro retornado não existir.")
+    public void livroNaoEncontradoTest() throws Exception{
+        //Cenário
+        Long id = 1l;
+
+        BDDMockito.given(service.getById(Mockito.anyLong())).willReturn(Optional.empty());
+
+        //Execução
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .get(LIVRO_API.concat("/" + id))
+                .accept(MediaType.APPLICATION_JSON);
+
+        mvc.perform(request)
+                .andExpect(status().isNotFound());
+    }
+
     private LivroDTO criaNovoLivro() {
         return LivroDTO.builder().autor("Gile").titulo("God of War").isbn("001").build();
     }

@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.util.Optional;
@@ -36,8 +37,10 @@ public class LivroController {
 
     @GetMapping("{id}")
     public LivroDTO get(@PathVariable Long id){
-        Livro livro = service.getById(id).get();
-        return modelMapper.map(livro,LivroDTO.class);
+        return service
+                .getById(id)
+                .map(livro -> modelMapper.map(livro,LivroDTO.class))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
