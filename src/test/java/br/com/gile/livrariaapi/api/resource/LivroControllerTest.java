@@ -199,6 +199,55 @@ public class LivroControllerTest {
                 .andExpect(status().isNotFound());
     }
 
+    @Test
+    @DisplayName("Deve atualizar um Livro.")
+    public void atualizaLivroTest() throws Exception{
+        //Cenário
+        Long id = 1l;
+        String json = new ObjectMapper().writeValueAsString(criaNovoLivro());
+
+        Livro livroASerAtualizado = Livro.builder().id(1l).titulo("Algum título").autor("Algum Autor").isbn("789").build();
+        BDDMockito.given(service.getById(id)).willReturn(Optional.of(livroASerAtualizado));
+
+        Livro livroAtualizado = Livro.builder().id(1l).autor(criaNovoLivro().getAutor()).titulo(criaNovoLivro().getTitulo()).isbn(criaNovoLivro().getIsbn()).build();
+        BDDMockito.given(service.update(livroASerAtualizado)).willReturn(livroAtualizado);
+
+        //Execução
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .put(LIVRO_API.concat("/" + 1))
+                .content(json)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        //Verificação
+        mvc.perform(request)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("id").value(id))
+                .andExpect(jsonPath("titulo").value(criaNovoLivro().getTitulo()))
+                .andExpect(jsonPath("autor").value(criaNovoLivro().getAutor()))
+                .andExpect(jsonPath("isbn").value(criaNovoLivro().getIsbn()))
+        ;
+    }
+
+    @Test
+    @DisplayName("Deve retornar 404 ao tentar atualizar um Livro inexistente.")
+    public void atualizaLivroInexistenteTest() throws Exception{
+        //Cenário
+        String json = new ObjectMapper().writeValueAsString(criaNovoLivro());
+        BDDMockito.given(service.getById(Mockito.anyLong())).willReturn(Optional.empty());
+
+        //Execução
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .put(LIVRO_API.concat("/" + 1))
+                .content(json)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        //Verificação
+        mvc.perform(request)
+                .andExpect(status().isNotFound());
+    }
+
     private LivroDTO criaNovoLivro() {
         return LivroDTO.builder().autor("Gile").titulo("God of War").isbn("001").build();
     }
