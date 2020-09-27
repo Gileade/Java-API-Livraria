@@ -78,7 +78,7 @@ public class LivroServiceTest {
 
     @Test
     @DisplayName("Deve obter um livro por Id")
-    public void pegaPorIdTest(){
+    public void pegaLivroPorIdTest(){
         //Cenário
         Long id = 1l;
         Livro livro = criaLivroValido();
