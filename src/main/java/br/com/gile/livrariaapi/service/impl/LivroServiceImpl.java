@@ -32,12 +32,18 @@ public class LivroServiceImpl implements LivroService {
 
     @Override
     public void delete(Livro livro) {
-
+        if(livro==null || livro.getId() == null){
+            throw new IllegalArgumentException("O id do livro não pode ser nulo.");
+        }
+        repository.delete(livro);
     }
 
     @Override
     public Livro update(Livro livro) {
-        return null;
+        if(livro==null || livro.getId() == null){
+            throw new IllegalArgumentException("O id do livro não pode ser nulo.");
+        }
+        return repository.save(livro);
     }
 
 
