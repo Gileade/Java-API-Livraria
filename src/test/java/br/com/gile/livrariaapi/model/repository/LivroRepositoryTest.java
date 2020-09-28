@@ -70,4 +70,34 @@ public class LivroRepositoryTest {
     private Livro criaNovoLivro(String isbn) {
         return Livro.builder().titulo("God of War").autor("Fulano").isbn(isbn).build();
     }
+
+    @Test
+    @DisplayName("Deve salvar um livro.")
+    public void salvaLivroTest(){
+        //Cenário
+        Livro livro = criaNovoLivro("123");
+
+        //Execução
+        Livro livroSalvo = repository.save(livro);
+
+        //Verificação
+        assertThat(livroSalvo.getId()).isNotNull();
+    }
+
+    @Test
+    @DisplayName("Deve deletar um livro.")
+    public void deletaLivroTest(){
+        //Cenário
+        Livro livro = criaNovoLivro("123");
+        entityManager.persist(livro);
+
+        Livro livroEncontrado = entityManager.find(Livro.class, livro.getId());
+
+        //Execução
+        repository.delete(livroEncontrado);
+
+        //Verificação
+        Livro livroDeletado = entityManager.find(Livro.class, livro.getId());
+        assertThat(livroDeletado).isNull();
+    }
 }
