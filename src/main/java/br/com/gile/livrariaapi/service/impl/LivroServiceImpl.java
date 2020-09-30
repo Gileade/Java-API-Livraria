@@ -4,6 +4,8 @@ import br.com.gile.livrariaapi.exception.BusinessException;
 import br.com.gile.livrariaapi.model.entity.Livro;
 import br.com.gile.livrariaapi.model.repository.LivroRepository;
 import br.com.gile.livrariaapi.service.LivroService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -44,6 +46,11 @@ public class LivroServiceImpl implements LivroService {
             throw new IllegalArgumentException("O id do livro não pode ser nulo.");
         }
         return repository.save(livro);
+    }
+
+    @Override
+    public Page<Livro> find(Livro filter, Pageable pageRequest) {
+        return null;
     }
 
 

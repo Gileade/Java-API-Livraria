@@ -5,6 +5,7 @@ import br.com.gile.livrariaapi.exception.BusinessException;
 import br.com.gile.livrariaapi.model.entity.Livro;
 import br.com.gile.livrariaapi.service.LivroService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,6 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
@@ -24,6 +29,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 
+import java.util.Arrays;
 import java.util.Optional;
 
 import static org.hamcrest.Matchers.hasSize;
@@ -246,6 +252,37 @@ public class LivroControllerTest {
         //Verificação
         mvc.perform(request)
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("Deve filtrat livros.")
+    public void filtraLivrosTest() throws Exception {
+        //Cenário
+        Long id = 1l;
+        Livro livro = Livro.builder()
+                .id(id)
+                .autor(criaNovoLivro().getAutor())
+                .titulo(criaNovoLivro().getTitulo())
+                .isbn(criaNovoLivro().getIsbn())
+                .build();
+
+        BDDMockito.given(service.find(Mockito.any(Livro.class), Mockito.any(Pageable.class)))
+                .willReturn( new PageImpl<Livro>(Arrays.asList(livro), PageRequest.of(0,100), 1));
+
+        String queryString = String.format("?titulo=%s&autor=%s&page=0&size=100", livro.getTitulo(), livro.getAutor());
+
+        //Execução
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .get(LIVRO_API.concat(queryString))
+                .accept(MediaType.APPLICATION_JSON);
+
+        //Verificação
+        mvc.perform(request)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("content", Matchers.hasSize(1)))
+                .andExpect(jsonPath("totalElements").value(1))
+                .andExpect(jsonPath("pageable.pageSize").value(100))
+                .andExpect(jsonPath("pageable.pageNumber").value(0));
     }
 
     private LivroDTO criaNovoLivro() {
