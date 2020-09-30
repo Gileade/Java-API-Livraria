@@ -4,6 +4,8 @@ import br.com.gile.livrariaapi.exception.BusinessException;
 import br.com.gile.livrariaapi.model.entity.Livro;
 import br.com.gile.livrariaapi.model.repository.LivroRepository;
 import br.com.gile.livrariaapi.service.LivroService;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -50,7 +52,15 @@ public class LivroServiceImpl implements LivroService {
 
     @Override
     public Page<Livro> find(Livro filter, Pageable pageRequest) {
-        return null;
+
+        Example<Livro> example = Example.of(filter,
+                ExampleMatcher
+                        .matching()
+                        .withIgnoreCase()
+                        .withIgnoreNullValues()
+                        .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING)
+        );
+        return repository.findAll(example, pageRequest);
     }
 
 

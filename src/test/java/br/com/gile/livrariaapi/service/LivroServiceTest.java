@@ -11,9 +11,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -172,6 +178,29 @@ public class LivroServiceTest {
 
         //Verificação
         Mockito.verify(repository, Mockito.never()).save(livro);
+    }
+
+    @Test
+    @DisplayName("Deve filtrar livros pelas propriedades.")
+    public void procuraLivroTest(){
+        //Cenário
+        Livro livro = criaLivroValido();
+
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        List<Livro> lista = Arrays.asList(livro);
+        Page<Livro> page = new PageImpl<Livro>(lista, pageRequest, 1);
+        Mockito.when(repository.findAll(Mockito.any(Example.class), Mockito.any(PageRequest.class)))
+                .thenReturn(page);
+
+        //Execução
+        Page<Livro> resultado = service.find(livro, pageRequest);
+
+
+        //Verificação
+        assertThat(resultado.getTotalElements()).isEqualTo(1);
+        assertThat(resultado.getContent()).isEqualTo(lista);
+        assertThat(resultado.getPageable().getPageNumber()).isEqualTo(0);
+        assertThat(resultado.getPageable().getPageSize()).isEqualTo(10);
     }
 
 
