@@ -34,7 +34,7 @@ public class LivroController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public LivroDTO cria(@RequestBody @Valid LivroDTO dto){
+    public LivroDTO create(@RequestBody @Valid LivroDTO dto){
         Livro entidade = modelMapper.map(dto, Livro.class);
         entidade = service.save(entidade);
         return modelMapper.map(entidade, LivroDTO.class);
@@ -50,13 +50,13 @@ public class LivroController {
 
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleta(@PathVariable Long id){
+    public void delete(@PathVariable Long id){
         Livro livro = service.getById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         service.delete(livro);
     }
 
     @PutMapping("{id}")
-    public LivroDTO atualiza(@PathVariable Long id, LivroDTO dto){
+    public LivroDTO update(@PathVariable Long id, LivroDTO dto){
         return service.getById(id).map(livro -> {
             livro.setAutor(dto.getAutor());
             livro.setTitulo(dto.getTitulo());
@@ -67,7 +67,7 @@ public class LivroController {
     }
 
     @GetMapping
-    public Page<LivroDTO> procura(LivroDTO dto, Pageable pageRequest){
+    public Page<LivroDTO> find(LivroDTO dto, Pageable pageRequest){
         Livro filtro = modelMapper.map(dto,Livro.class);
         Page<Livro> resultado = service.find(filtro,pageRequest);
         List<LivroDTO> lista = resultado.getContent().stream()
