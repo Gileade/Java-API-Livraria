@@ -1,6 +1,7 @@
 package br.com.gile.livrariaapi.api.resource;
 
 import br.com.gile.livrariaapi.api.dto.EmprestimoDto;
+import br.com.gile.livrariaapi.exception.BusinessException;
 import br.com.gile.livrariaapi.model.entity.Emprestimo;
 import br.com.gile.livrariaapi.model.entity.Livro;
 import br.com.gile.livrariaapi.service.EmprestimoService;
@@ -83,5 +84,28 @@ public class EmprestimoControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("errors", Matchers.hasSize(1)))
                 .andExpect(jsonPath("errors[0]").value("Livro não encontrado para o isbn"));
+    }
+
+    @Test
+    @DisplayName("Deve retornar erro ao tentar fazer emprestimo de um livro já emprestado.")
+    public void livroEmprestadoErrorCriaEmprestimoTest() throws Exception{
+        EmprestimoDto dto = EmprestimoDto.builder().isbn("123").cliente("Fulano").build();
+        String json = new ObjectMapper().writeValueAsString(dto);
+
+        Livro livro = Livro.builder().id(1l).isbn("123").build();
+        BDDMockito.given(livroService.getBookByIsbn("123")).willReturn(Optional.of(livro));
+
+        BDDMockito.given(emprestimoService.save(Mockito.any(Emprestimo.class)))
+                .willThrow(new BusinessException("Livro já emprestado"));
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(EMPRESTIMO_API)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json);
+
+        mvc.perform(request)
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("errors", Matchers.hasSize(1)))
+                .andExpect(jsonPath("errors[0]").value("Livro já emprestado"));
     }
 }
