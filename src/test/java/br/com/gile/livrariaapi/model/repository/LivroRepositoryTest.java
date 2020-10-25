@@ -67,7 +67,7 @@ public class LivroRepositoryTest {
         assertThat(livroEncontrado.isPresent()).isTrue();
     }
 
-    private Livro criaNovoLivro(String isbn) {
+    public static Livro criaNovoLivro(String isbn) {
         return Livro.builder().titulo("God of War").autor("Fulano").isbn(isbn).build();
     }
 
