@@ -1,16 +1,13 @@
 package br.com.gile.livrariaapi.api.resource;
 
 import br.com.gile.livrariaapi.api.dto.EmprestimoDto;
-import br.com.gile.livrariaapi.api.dto.LivroDTO;
 import br.com.gile.livrariaapi.model.entity.Emprestimo;
 import br.com.gile.livrariaapi.model.entity.Livro;
 import br.com.gile.livrariaapi.service.EmprestimoService;
 import br.com.gile.livrariaapi.service.LivroService;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
@@ -27,7 +24,7 @@ public class EmprestimoController {
     @ResponseStatus(HttpStatus.CREATED)
     public Long create(@RequestBody @Valid EmprestimoDto dto){
         Livro livro = livroService
-                .getBookByIsbn(dto.getIsbn())
+                .getByIsbn(dto.getIsbn())
                 .orElseThrow(()-> new ResponseStatusException(HttpStatus.BAD_REQUEST,"Livro não encontrado para o isbn"));
         Emprestimo entidade = Emprestimo.builder()
                             .livro(livro)

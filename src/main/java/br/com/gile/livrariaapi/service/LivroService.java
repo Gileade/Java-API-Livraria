@@ -10,6 +10,7 @@ public interface LivroService {
     Livro save(Livro livro);
 
     Optional<Livro> getById(Long id);
+    Optional<Livro> getByIsbn(String isbn);
 
     void delete(Livro livro);
 
@@ -17,5 +18,4 @@ public interface LivroService {
 
     Page<Livro> find(Livro filter, Pageable pageRequest);
 
-    Optional<Livro> getBookByIsbn(String isbn);
 }

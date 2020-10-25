@@ -52,7 +52,7 @@ public class EmprestimoControllerTest {
         String json = new ObjectMapper().writeValueAsString(dto);
 
         Livro livro = Livro.builder().id(1l).isbn("123").build();
-        BDDMockito.given(livroService.getBookByIsbn("123")).willReturn(Optional.of(livro));
+        BDDMockito.given(livroService.getByIsbn("123")).willReturn(Optional.of(livro));
 
         Emprestimo emprestimo = Emprestimo.builder().id(1l).cliente("Fulano").livro(livro).dataDoEmprestimo(LocalDate.now()).build();
         BDDMockito.given(emprestimoService.save(Mockito.any(Emprestimo.class))).willReturn(emprestimo);
@@ -73,7 +73,7 @@ public class EmprestimoControllerTest {
         EmprestimoDto dto = EmprestimoDto.builder().isbn("123").cliente("Fulano").build();
         String json = new ObjectMapper().writeValueAsString(dto);
 
-        BDDMockito.given(livroService.getBookByIsbn("123")).willReturn(Optional.empty());
+        BDDMockito.given(livroService.getByIsbn("123")).willReturn(Optional.empty());
 
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(EMPRESTIMO_API)
                 .accept(MediaType.APPLICATION_JSON)
@@ -93,7 +93,7 @@ public class EmprestimoControllerTest {
         String json = new ObjectMapper().writeValueAsString(dto);
 
         Livro livro = Livro.builder().id(1l).isbn("123").build();
-        BDDMockito.given(livroService.getBookByIsbn("123")).willReturn(Optional.of(livro));
+        BDDMockito.given(livroService.getByIsbn("123")).willReturn(Optional.of(livro));
 
         BDDMockito.given(emprestimoService.save(Mockito.any(Emprestimo.class)))
                 .willThrow(new BusinessException("Livro já emprestado"));
