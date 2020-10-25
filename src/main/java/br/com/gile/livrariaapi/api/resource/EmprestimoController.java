@@ -39,7 +39,7 @@ public class EmprestimoController {
 
     @PatchMapping("{id}")
     public void retornaLivro(@PathVariable Long id, @RequestBody EmprestimoRetornadoDTO dto){
-        Emprestimo emprestimo = service.getById(id).get();
+        Emprestimo emprestimo = service.getById(id).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
         emprestimo.setRetornado(dto.getRetornado());
 
         service.update(emprestimo);

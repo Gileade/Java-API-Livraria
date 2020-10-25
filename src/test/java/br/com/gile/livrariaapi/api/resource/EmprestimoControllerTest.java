@@ -113,14 +113,14 @@ public class EmprestimoControllerTest {
     }
 
     @Test
-    @DisplayName("Deve retornar um livro")
+    @DisplayName("Deve retornar um livro.")
     public void retornaLivroTest() throws Exception {
         EmprestimoRetornadoDTO dto = EmprestimoRetornadoDTO.builder().retornado(true).build();
+        String json = new ObjectMapper().writeValueAsString(dto);
         Emprestimo emprestimo = Emprestimo.builder().id(1l).build();
+
         BDDMockito.given(emprestimoService.getById(Mockito.anyLong()))
                 .willReturn(Optional.of(emprestimo));
-
-        String json = new ObjectMapper().writeValueAsString(dto);
 
         mvc.perform(
             patch(EMPRESTIMO_API.concat("/1"))
@@ -130,5 +130,23 @@ public class EmprestimoControllerTest {
         ).andExpect(status().isOk());
 
         Mockito.verify(emprestimoService, Mockito.times(1)).update(emprestimo);
+    }
+
+    @Test
+    @DisplayName("Deve retornar 404 quando tentar devolver um livro inexistente.")
+    public void retornaLivroInexistenteTest() throws Exception {
+        EmprestimoRetornadoDTO dto = EmprestimoRetornadoDTO.builder().retornado(true).build();
+        String json = new ObjectMapper().writeValueAsString(dto);
+
+        BDDMockito.given(emprestimoService.getById(Mockito.anyLong()))
+                .willReturn(Optional.empty());
+
+
+        mvc.perform(
+                patch(EMPRESTIMO_API.concat("/1"))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+        ).andExpect(status().isNotFound());
     }
 }
