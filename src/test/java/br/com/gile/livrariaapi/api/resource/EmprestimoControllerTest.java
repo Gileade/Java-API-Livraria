@@ -6,6 +6,7 @@ import br.com.gile.livrariaapi.model.entity.Livro;
 import br.com.gile.livrariaapi.service.EmprestimoService;
 import br.com.gile.livrariaapi.service.LivroService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -63,5 +64,24 @@ public class EmprestimoControllerTest {
         mvc.perform(request)
                 .andExpect(status().isCreated())
                 .andExpect(content().string("1"));
+    }
+
+    @Test
+    @DisplayName("Deve retornar erro ao tentar fazer emprestimo de um livro inexistente.")
+    public void isbnInvalidoCriaEmprestimoTest() throws Exception{
+        EmprestimoDto dto = EmprestimoDto.builder().isbn("123").cliente("Fulano").build();
+        String json = new ObjectMapper().writeValueAsString(dto);
+
+        BDDMockito.given(livroService.getBookByIsbn("123")).willReturn(Optional.empty());
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(EMPRESTIMO_API)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json);
+
+        mvc.perform(request)
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("errors", Matchers.hasSize(1)))
+                .andExpect(jsonPath("errors[0]").value("Livro não encontrado para o isbn"));
     }
 }

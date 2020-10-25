@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
@@ -24,7 +26,9 @@ public class EmprestimoController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Long create(@RequestBody @Valid EmprestimoDto dto){
-        Livro livro = livroService.getBookByIsbn(dto.getIsbn()).get();
+        Livro livro = livroService
+                .getBookByIsbn(dto.getIsbn())
+                .orElseThrow(()-> new ResponseStatusException(HttpStatus.BAD_REQUEST,"Livro não encontrado para o isbn"));
         Emprestimo entidade = Emprestimo.builder()
                             .livro(livro)
                             .cliente(dto.getCliente())
