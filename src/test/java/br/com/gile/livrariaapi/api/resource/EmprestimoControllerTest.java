@@ -1,11 +1,13 @@
 package br.com.gile.livrariaapi.api.resource;
 
 import br.com.gile.livrariaapi.api.dto.EmprestimoDto;
+import br.com.gile.livrariaapi.api.dto.EmprestimoRetornadoDTO;
 import br.com.gile.livrariaapi.exception.BusinessException;
 import br.com.gile.livrariaapi.model.entity.Emprestimo;
 import br.com.gile.livrariaapi.model.entity.Livro;
 import br.com.gile.livrariaapi.service.EmprestimoService;
 import br.com.gile.livrariaapi.service.LivroService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
@@ -27,6 +29,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(SpringExtension.class)
@@ -107,5 +110,25 @@ public class EmprestimoControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("errors", Matchers.hasSize(1)))
                 .andExpect(jsonPath("errors[0]").value("Livro já emprestado"));
+    }
+
+    @Test
+    @DisplayName("Deve retornar um livro")
+    public void retornaLivroTest() throws Exception {
+        EmprestimoRetornadoDTO dto = EmprestimoRetornadoDTO.builder().retornado(true).build();
+        Emprestimo emprestimo = Emprestimo.builder().id(1l).build();
+        BDDMockito.given(emprestimoService.getById(Mockito.anyLong()))
+                .willReturn(Optional.of(emprestimo));
+
+        String json = new ObjectMapper().writeValueAsString(dto);
+
+        mvc.perform(
+            patch(EMPRESTIMO_API.concat("/1"))
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json)
+        ).andExpect(status().isOk());
+
+        Mockito.verify(emprestimoService, Mockito.times(1)).update(emprestimo);
     }
 }

@@ -1,6 +1,7 @@
 package br.com.gile.livrariaapi.api.resource;
 
 import br.com.gile.livrariaapi.api.dto.EmprestimoDto;
+import br.com.gile.livrariaapi.api.dto.EmprestimoRetornadoDTO;
 import br.com.gile.livrariaapi.model.entity.Emprestimo;
 import br.com.gile.livrariaapi.model.entity.Livro;
 import br.com.gile.livrariaapi.service.EmprestimoService;
@@ -34,5 +35,13 @@ public class EmprestimoController {
 
         entidade = service.save(entidade);
         return entidade.getId();
+    }
+
+    @PatchMapping("{id}")
+    public void retornaLivro(@PathVariable Long id, @RequestBody EmprestimoRetornadoDTO dto){
+        Emprestimo emprestimo = service.getById(id).get();
+        emprestimo.setRetornado(dto.getRetornado());
+
+        service.update(emprestimo);
     }
 }
