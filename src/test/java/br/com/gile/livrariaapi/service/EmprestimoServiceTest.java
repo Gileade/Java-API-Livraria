@@ -101,6 +101,24 @@ public class EmprestimoServiceTest {
         verify(repository).findById(id);
     }
 
+    @Test
+    @DisplayName("Deve atualizar um empréstimo.")
+    public void atualizaEmprestimo(){
+        Long id = 1l;
+
+        Emprestimo emprestimo = criaEmprestimo();
+        emprestimo.setId(id);
+        emprestimo.setRetornado(true);
+
+        when(repository.save(emprestimo)).thenReturn(emprestimo);
+
+        Emprestimo emprestimoAtualizado = service.update(emprestimo);
+
+        assertThat(emprestimoAtualizado.getRetornado()).isTrue();
+
+        verify(repository).save(emprestimo);
+    }
+
     public Emprestimo criaEmprestimo(){
         Livro livro = Livro.builder().id(1l).build();
         String cliente = "Fulano";
