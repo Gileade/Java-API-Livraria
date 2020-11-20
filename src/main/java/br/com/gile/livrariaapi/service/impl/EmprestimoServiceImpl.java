@@ -37,7 +37,7 @@ public class EmprestimoServiceImpl implements EmprestimoService {
 
     @Override
     public Page<Emprestimo> find(EmprestimoFilterDTO filterDTO, Pageable pageable) {
-        return null;
+        return repository.findByLivroIsbnOrCliente(filterDTO.getIsbn(),filterDTO.getCliente(),pageable);
     }
 }
 

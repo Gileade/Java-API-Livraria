@@ -1,5 +1,6 @@
 package br.com.gile.livrariaapi.service;
 
+import br.com.gile.livrariaapi.api.dto.EmprestimoFilterDTO;
 import br.com.gile.livrariaapi.exception.BusinessException;
 import br.com.gile.livrariaapi.model.entity.Emprestimo;
 import br.com.gile.livrariaapi.model.entity.Livro;
@@ -9,11 +10,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -117,6 +125,34 @@ public class EmprestimoServiceTest {
         assertThat(emprestimoAtualizado.getRetornado()).isTrue();
 
         verify(repository).save(emprestimo);
+    }
+
+    @Test
+    @DisplayName("Deve filtrar Emprestimos pelas propriedades.")
+    public void procuraEmprestimoTest(){
+        //Cenário
+        Long id = 1l;
+
+        EmprestimoFilterDTO emprestimoFilterDTO = EmprestimoFilterDTO.builder().cliente("Fulano").isbn("321").build();
+        Emprestimo emprestimo = criaEmprestimo();
+        emprestimo.setId(id);
+
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        List<Emprestimo> lista = Arrays.asList(emprestimo);
+
+        Page<Emprestimo> page = new PageImpl<Emprestimo>(lista, pageRequest, 1);
+        when(repository.findByLivroIsbnOrCliente(Mockito.anyString(), Mockito.anyString(), Mockito.any(PageRequest.class)))
+                .thenReturn(page);
+
+        //Execução
+        Page<Emprestimo> resultado = service.find(emprestimoFilterDTO, pageRequest);
+
+
+        //Verificação
+        assertThat(resultado.getTotalElements()).isEqualTo(1);
+        assertThat(resultado.getContent()).isEqualTo(lista);
+        assertThat(resultado.getPageable().getPageNumber()).isEqualTo(0);
+        assertThat(resultado.getPageable().getPageSize()).isEqualTo(10);
     }
 
     public static Emprestimo criaEmprestimo(){
