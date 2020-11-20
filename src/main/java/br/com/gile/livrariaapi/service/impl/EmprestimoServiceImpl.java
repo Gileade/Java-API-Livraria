@@ -24,7 +24,7 @@ public class EmprestimoServiceImpl implements EmprestimoService {
 
     @Override
     public Optional<Emprestimo> getById(Long id) {
-        return Optional.empty();
+        return repository.findById(id);
     }
 
     @Override

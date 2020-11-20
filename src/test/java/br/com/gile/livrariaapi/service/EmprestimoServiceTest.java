@@ -14,6 +14,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
@@ -66,23 +67,48 @@ public class EmprestimoServiceTest {
     @Test
     @DisplayName("Deve lançar erro de negócio salvar um empréstimo com livro já emprestado")
     public void livroEmprestadosalvarEmprestimoTest(){
-        Livro livro = Livro.builder().id(1l).build();
-        String cliente = "Fulano";
+        Emprestimo emprestimo = criaEmprestimo();
 
-        Emprestimo salvandoEmprestimo = Emprestimo.builder()
-                .livro(livro)
-                .cliente(cliente)
-                .dataDoEmprestimo(LocalDate.now())
-                .build();
+        when(repository.existsByLivroAndNotRetornado(emprestimo.getLivro())).thenReturn(true);
 
-        when(repository.existsByLivroAndNotRetornado(livro)).thenReturn(true);
-
-        Throwable exception = catchThrowable(() -> service.save(salvandoEmprestimo));
+        Throwable exception = catchThrowable(() -> service.save(emprestimo));
 
         assertThat(exception)
                 .isInstanceOf(BusinessException.class)
                 .hasMessage("Livro já emprestado");
 
-        verify(repository, never()).save(salvandoEmprestimo);
+        verify(repository, never()).save(emprestimo);
+    }
+
+    @Test
+    @DisplayName("Deve obter as informações de um empréstimo pelo ID")
+    public void getEmprestimoTest(){
+        Long id = 1l;
+
+        Emprestimo emprestimo = criaEmprestimo();
+        emprestimo.setId(id);
+
+        when(repository.findById(id)).thenReturn(Optional.of(emprestimo));
+
+        Optional<Emprestimo> resultado = service.getById(id);
+
+        assertThat(resultado.isPresent()).isTrue();
+        assertThat(resultado.get().getId()).isEqualTo(id);
+        assertThat(resultado.get().getCliente()).isEqualTo(emprestimo.getCliente());
+        assertThat(resultado.get().getLivro()).isEqualTo(emprestimo.getLivro());
+        assertThat(resultado.get().getDataDoEmprestimo()).isEqualTo(emprestimo.getDataDoEmprestimo());
+
+        verify(repository).findById(id);
+    }
+
+    public Emprestimo criaEmprestimo(){
+        Livro livro = Livro.builder().id(1l).build();
+        String cliente = "Fulano";
+
+        return Emprestimo.builder()
+                .livro(livro)
+                .cliente(cliente)
+                .dataDoEmprestimo(LocalDate.now())
+                .build();
     }
 }
