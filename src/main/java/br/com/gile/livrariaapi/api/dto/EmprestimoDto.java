@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class EmprestimoDto {
 
+    private Long id;
     private String isbn;
     private String cliente;
+    private LivroDTO livro;
 }

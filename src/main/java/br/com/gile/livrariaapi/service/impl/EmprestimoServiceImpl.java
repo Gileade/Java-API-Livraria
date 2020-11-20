@@ -1,9 +1,12 @@
 package br.com.gile.livrariaapi.service.impl;
 
+import br.com.gile.livrariaapi.api.dto.EmprestimoFilterDTO;
 import br.com.gile.livrariaapi.exception.BusinessException;
 import br.com.gile.livrariaapi.model.entity.Emprestimo;
 import br.com.gile.livrariaapi.model.repository.EmprestimoRepository;
 import br.com.gile.livrariaapi.service.EmprestimoService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Optional;
 
@@ -30,6 +33,11 @@ public class EmprestimoServiceImpl implements EmprestimoService {
     @Override
     public Emprestimo update(Emprestimo emprestimo) {
         return repository.save(emprestimo);
+    }
+
+    @Override
+    public Page<Emprestimo> find(EmprestimoFilterDTO filterDTO, Pageable pageable) {
+        return null;
     }
 }
 

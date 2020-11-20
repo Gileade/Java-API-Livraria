@@ -119,7 +119,7 @@ public class EmprestimoServiceTest {
         verify(repository).save(emprestimo);
     }
 
-    public Emprestimo criaEmprestimo(){
+    public static Emprestimo criaEmprestimo(){
         Livro livro = Livro.builder().id(1l).build();
         String cliente = "Fulano";
 

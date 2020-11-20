@@ -1,13 +1,14 @@
 package br.com.gile.livrariaapi.api.resource;
 
 import br.com.gile.livrariaapi.api.dto.EmprestimoDto;
+import br.com.gile.livrariaapi.api.dto.EmprestimoFilterDTO;
 import br.com.gile.livrariaapi.api.dto.EmprestimoRetornadoDTO;
 import br.com.gile.livrariaapi.exception.BusinessException;
 import br.com.gile.livrariaapi.model.entity.Emprestimo;
 import br.com.gile.livrariaapi.model.entity.Livro;
 import br.com.gile.livrariaapi.service.EmprestimoService;
+import br.com.gile.livrariaapi.service.EmprestimoServiceTest;
 import br.com.gile.livrariaapi.service.LivroService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
@@ -19,6 +20,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -27,6 +31,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Optional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -149,4 +154,35 @@ public class EmprestimoControllerTest {
                         .content(json)
         ).andExpect(status().isNotFound());
     }
+
+    @Test
+    @DisplayName("Deve filtrat empréstimos.")
+    public void filtraEmprestimosTest() throws Exception {
+        //Cenário
+        Long id = 1l;
+
+        Emprestimo emprestimo = EmprestimoServiceTest.criaEmprestimo();
+        emprestimo.setId(id);
+        Livro livro = Livro.builder().id(1l).isbn("321").build();
+        emprestimo.setLivro(livro);
+
+        BDDMockito.given(emprestimoService.find(Mockito.any(EmprestimoFilterDTO.class), Mockito.any(Pageable.class)))
+                .willReturn( new PageImpl<Emprestimo>(Arrays.asList(emprestimo), PageRequest.of(0,10), 1));
+
+        String queryString = String.format("?isbn=%s&cliente=%s&page=0&size=10", livro.getIsbn(), emprestimo.getCliente());
+
+        //Execução
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .get(EMPRESTIMO_API.concat(queryString))
+                .accept(MediaType.APPLICATION_JSON);
+
+        //Verificação
+        mvc.perform(request)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("content", Matchers.hasSize(1)))
+                .andExpect(jsonPath("totalElements").value(1))
+                .andExpect(jsonPath("pageable.pageSize").value(10))
+                .andExpect(jsonPath("pageable.pageNumber").value(0));
+    }
+
 }
