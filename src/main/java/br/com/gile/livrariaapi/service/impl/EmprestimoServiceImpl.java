@@ -3,6 +3,7 @@ package br.com.gile.livrariaapi.service.impl;
 import br.com.gile.livrariaapi.api.dto.EmprestimoFilterDTO;
 import br.com.gile.livrariaapi.exception.BusinessException;
 import br.com.gile.livrariaapi.model.entity.Emprestimo;
+import br.com.gile.livrariaapi.model.entity.Livro;
 import br.com.gile.livrariaapi.model.repository.EmprestimoRepository;
 import br.com.gile.livrariaapi.service.EmprestimoService;
 import org.springframework.data.domain.Page;
@@ -38,6 +39,11 @@ public class EmprestimoServiceImpl implements EmprestimoService {
     @Override
     public Page<Emprestimo> find(EmprestimoFilterDTO filterDTO, Pageable pageable) {
         return repository.findByLivroIsbnOrCliente(filterDTO.getIsbn(),filterDTO.getCliente(),pageable);
+    }
+
+    @Override
+    public Page<Emprestimo> getEmprestimoPorLivro(Livro livro, Pageable pageable) {
+        return repository.findByLivro(livro, pageable);
     }
 }
 

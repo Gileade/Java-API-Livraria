@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Data
 @Builder
@@ -25,4 +26,7 @@ public class Livro {
     private String autor;
     @Column
     private String isbn;
+
+    @OneToMany(mappedBy = "livro", fetch = FetchType.LAZY)
+    private List<Emprestimo> emprestimos;
 }

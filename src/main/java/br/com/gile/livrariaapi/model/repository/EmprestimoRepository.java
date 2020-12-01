@@ -20,4 +20,6 @@ public interface EmprestimoRepository extends JpaRepository<Emprestimo, Long> {
             @Param("cliente") String cliente,
             Pageable pageRequest
     );
+
+    Page<Emprestimo> findByLivro(Livro livro, Pageable pageable);
 }
