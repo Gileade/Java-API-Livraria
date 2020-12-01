@@ -8,9 +8,13 @@ import br.com.gile.livrariaapi.model.repository.EmprestimoRepository;
 import br.com.gile.livrariaapi.service.EmprestimoService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
+@Service
 public class EmprestimoServiceImpl implements EmprestimoService {
     private EmprestimoRepository repository;
 
@@ -44,6 +48,13 @@ public class EmprestimoServiceImpl implements EmprestimoService {
     @Override
     public Page<Emprestimo> getEmprestimoPorLivro(Livro livro, Pageable pageable) {
         return repository.findByLivro(livro, pageable);
+    }
+
+    @Override
+    public List<Emprestimo> getAllEmprestimosAtrasados() {
+        final Integer diasDeEmprestimo = 4;
+        LocalDate tresDiasAtras = LocalDate.now().minusDays(diasDeEmprestimo);
+        return repository.findByDataMenorENaoRetornado(tresDiasAtras);
     }
 }
 

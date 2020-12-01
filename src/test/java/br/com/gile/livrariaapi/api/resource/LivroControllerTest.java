@@ -3,6 +3,7 @@ package br.com.gile.livrariaapi.api.resource;
 import br.com.gile.livrariaapi.api.dto.LivroDTO;
 import br.com.gile.livrariaapi.exception.BusinessException;
 import br.com.gile.livrariaapi.model.entity.Livro;
+import br.com.gile.livrariaapi.service.EmprestimoService;
 import br.com.gile.livrariaapi.service.LivroService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
@@ -35,8 +36,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
-@WebMvcTest(controllers = LivroController.class)
 @AutoConfigureMockMvc
+@WebMvcTest(controllers = LivroController.class)
 public class LivroControllerTest {
 
     static String LIVRO_API = "/api/livros";
@@ -46,6 +47,9 @@ public class LivroControllerTest {
 
     @MockBean
     LivroService service;
+
+    @MockBean
+    EmprestimoService emprestimoService;
 
     @Test
     @DisplayName("Deve criar um livro com sucesso.")
@@ -281,6 +285,8 @@ public class LivroControllerTest {
                 .andExpect(jsonPath("pageable.pageSize").value(100))
                 .andExpect(jsonPath("pageable.pageNumber").value(0));
     }
+
+
 
     private LivroDTO criaNovoLivro() {
         return LivroDTO.builder().autor("Gile").titulo("God of War").isbn("001").build();

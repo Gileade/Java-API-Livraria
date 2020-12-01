@@ -14,6 +14,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static br.com.gile.livrariaapi.model.repository.LivroRepositoryTest.criaNovoLivro;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,7 +34,7 @@ public class EmprestimoRepositoryTest {
     @DisplayName("Deve verificar se existe empréstimo não devolvido para o livro.")
     public void existsByLivroAndNotRetornado(){
         //Cenário
-        Emprestimo emprestimo = criaEGravaEmprestimo();
+        Emprestimo emprestimo = criaEGravaEmprestimo(LocalDate.now());
         Livro livro = emprestimo.getLivro();
 
         //Execução
@@ -46,7 +47,7 @@ public class EmprestimoRepositoryTest {
     @DisplayName("Deve buscar empréstimo pelo isbn do livro ou cliente")
     public void procuraLivroPorIsbnOuClienteTest(){
         //Cenário
-        Emprestimo emprestimo = criaEGravaEmprestimo();
+        Emprestimo emprestimo = criaEGravaEmprestimo(LocalDate.now());
 
         Page<Emprestimo> resultado = repository.findByLivroIsbnOrCliente("123", "Fulano", PageRequest.of(0, 10));
 
@@ -58,11 +59,34 @@ public class EmprestimoRepositoryTest {
 
     }
 
-    public Emprestimo criaEGravaEmprestimo(){
+    @Test
+    @DisplayName("Deve obter epréstimos cuja data de emprestimo for menor ou igual a tres dias atras e não retornados")
+    public void findPorDataMenorENaoRetornado(){
+        //Cenário
+        Emprestimo emprestimo = criaEGravaEmprestimo(LocalDate.now().minusDays(5));
+
+        List<Emprestimo> resultado = repository.findByDataMenorENaoRetornado(LocalDate.now().minusDays(4));
+
+        assertThat(resultado).hasSize(1);
+        assertThat(resultado).contains(emprestimo);
+    }
+
+    @Test
+    @DisplayName("Deve retornar vazio quando não houver emprestimos atrasados")
+    public void notFindPorDataMenorENaoRetornado(){
+        //Cenário
+        Emprestimo emprestimo = criaEGravaEmprestimo(LocalDate.now());
+
+        List<Emprestimo> resultado = repository.findByDataMenorENaoRetornado(LocalDate.now().minusDays(4));
+
+        assertThat(resultado).isEmpty();
+    }
+
+    public Emprestimo criaEGravaEmprestimo(LocalDate dataEmprestimo){
         Livro livro = criaNovoLivro("123");
         entityManager.persist(livro);
 
-        Emprestimo emprestimo = Emprestimo.builder().livro(livro).cliente("Fulano").dataDoEmprestimo(LocalDate.now()).build();
+        Emprestimo emprestimo = Emprestimo.builder().livro(livro).cliente("Fulano").dataDoEmprestimo(dataEmprestimo).build();
         entityManager.persist(emprestimo);
 
         return emprestimo;

@@ -39,8 +39,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
-@WebMvcTest(controllers = EmprestimoController.class)
 @AutoConfigureMockMvc
+@WebMvcTest(controllers = EmprestimoController.class)
 public class EmprestimoControllerTest {
 
     static final String EMPRESTIMO_API = "/api/emprestimos";
@@ -56,7 +56,7 @@ public class EmprestimoControllerTest {
     @Test
     @DisplayName("Deve realizar um emprestimo.")
     public void criaEmprestimoTest() throws Exception{
-        EmprestimoDto dto = EmprestimoDto.builder().isbn("123").cliente("Fulano").build();
+        EmprestimoDto dto = EmprestimoDto.builder().isbn("123").email("cliente@email.com").cliente("Fulano").build();
         String json = new ObjectMapper().writeValueAsString(dto);
 
         Livro livro = Livro.builder().id(1l).isbn("123").build();
@@ -78,7 +78,7 @@ public class EmprestimoControllerTest {
     @Test
     @DisplayName("Deve retornar erro ao tentar fazer emprestimo de um livro inexistente.")
     public void isbnInvalidoCriaEmprestimoTest() throws Exception{
-        EmprestimoDto dto = EmprestimoDto.builder().isbn("123").cliente("Fulano").build();
+        EmprestimoDto dto = EmprestimoDto.builder().isbn("123").email("cliente@email.com").cliente("Fulano").build();
         String json = new ObjectMapper().writeValueAsString(dto);
 
         BDDMockito.given(livroService.getByIsbn("123")).willReturn(Optional.empty());
@@ -97,7 +97,7 @@ public class EmprestimoControllerTest {
     @Test
     @DisplayName("Deve retornar erro ao tentar fazer emprestimo de um livro já emprestado.")
     public void livroEmprestadoErrorCriaEmprestimoTest() throws Exception{
-        EmprestimoDto dto = EmprestimoDto.builder().isbn("123").cliente("Fulano").build();
+        EmprestimoDto dto = EmprestimoDto.builder().isbn("123").email("cliente@email.com").cliente("Fulano").build();
         String json = new ObjectMapper().writeValueAsString(dto);
 
         Livro livro = Livro.builder().id(1l).isbn("123").build();

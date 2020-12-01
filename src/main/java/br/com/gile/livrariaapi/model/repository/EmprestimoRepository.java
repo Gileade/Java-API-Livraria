@@ -8,6 +8,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
+import java.util.List;
+
 public interface EmprestimoRepository extends JpaRepository<Emprestimo, Long> {
 
     @Query(value = "select case when (count(e.id) > 0) then true else false end " +
@@ -22,4 +25,7 @@ public interface EmprestimoRepository extends JpaRepository<Emprestimo, Long> {
     );
 
     Page<Emprestimo> findByLivro(Livro livro, Pageable pageable);
+
+    @Query(value = "select e from Emprestimo e where e.dataDoEmprestimo <= :tresDiasAtras and (e.retornado is null or e.retornado is false)")
+    List<Emprestimo> findByDataMenorENaoRetornado(@Param("tresDiasAtras") LocalDate tresDiasAtras);
 }
