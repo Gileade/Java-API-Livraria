@@ -28,6 +28,6 @@ public class AgendamentoService {
                 .map(emprestimo -> emprestimo.getEmailCliente())
                 .collect(Collectors.toList());
 
-        emailService.enviaEmails(listaDeEmails,mensagem);
+        emailService.enviaEmails(mensagem,listaDeEmails);
     }
 }

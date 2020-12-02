@@ -19,7 +19,7 @@ public class EmailServiceImpl implements EmailService {
     private final JavaMailSender javaMailSender;
 
     @Override
-    public void enviaEmails(List<String> listaDeEmails, String mensagem) {
+    public void enviaEmails(String mensagem, List<String> listaDeEmails) {
         String[] emails = listaDeEmails.toArray(new String[listaDeEmails.size()]);
 
         SimpleMailMessage mensagemDeEmail = new SimpleMailMessage();
