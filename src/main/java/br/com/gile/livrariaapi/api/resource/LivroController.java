@@ -11,6 +11,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/livros")
 @RequiredArgsConstructor
 @Api("API de Livro")
+@Slf4j
 public class LivroController {
 
     private final LivroService service;
@@ -37,6 +39,7 @@ public class LivroController {
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation("Cria um Livro")
     public LivroDTO create(@RequestBody @Valid LivroDTO dto){
+        log.info("Criando um livro para o isbn: {}", dto.getIsbn());
         Livro entidade = modelMapper.map(dto, Livro.class);
         entidade = service.save(entidade);
         return modelMapper.map(entidade, LivroDTO.class);
@@ -45,6 +48,7 @@ public class LivroController {
     @GetMapping("{id}")
     @ApiOperation("Obtém detalhes de um Livro por id")
     public LivroDTO get(@PathVariable Long id){
+        log.info("Obtendo detalhes do livro pelo id: {}", id);
         return service
                 .getById(id)
                 .map(livro -> modelMapper.map(livro,LivroDTO.class))
@@ -62,6 +66,7 @@ public class LivroController {
     })
     */
     public void delete(@PathVariable Long id){
+        log.info("Deletando o livro do id: {}", id);
         Livro livro = service.getById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         service.delete(livro);
     }
@@ -69,6 +74,7 @@ public class LivroController {
     @PutMapping("{id}")
     @ApiOperation("Atualiza um Livro por id")
     public LivroDTO update(@PathVariable Long id, LivroDTO dto){
+        log.info("Atualizando o livro do id: {}", id);
         return service.getById(id).map(livro -> {
             livro.setAutor(dto.getAutor());
             livro.setTitulo(dto.getTitulo());
