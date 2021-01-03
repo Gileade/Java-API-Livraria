@@ -73,7 +73,7 @@ public class LivroController {
 
     @PutMapping("{id}")
     @ApiOperation("Atualiza um Livro por id")
-    public LivroDTO update(@PathVariable Long id, LivroDTO dto){
+    public LivroDTO update(@PathVariable Long id, @RequestBody @Valid LivroDTO dto){
         log.info("Atualizando o livro do id: {}", id);
         return service.getById(id).map(livro -> {
             livro.setAutor(dto.getAutor());
