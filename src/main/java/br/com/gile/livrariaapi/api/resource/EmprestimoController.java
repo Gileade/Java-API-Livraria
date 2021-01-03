@@ -8,6 +8,7 @@ import br.com.gile.livrariaapi.model.entity.Emprestimo;
 import br.com.gile.livrariaapi.model.entity.Livro;
 import br.com.gile.livrariaapi.service.EmprestimoService;
 import br.com.gile.livrariaapi.service.LivroService;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -32,6 +33,7 @@ public class EmprestimoController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @ApiOperation("Cria um Empréstimo")
     public Long create(@RequestBody @Valid EmprestimoDto dto){
         Livro livro = livroService
                 .getByIsbn(dto.getIsbn())
@@ -47,6 +49,7 @@ public class EmprestimoController {
     }
 
     @PatchMapping("{id}")
+    @ApiOperation("Obtém detalhes de um Empréstimo por id")
     public void retornaLivro(@PathVariable Long id, @RequestBody EmprestimoRetornadoDTO dto){
         Emprestimo emprestimo = service.getById(id).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
         emprestimo.setRetornado(dto.getRetornado());
@@ -55,6 +58,7 @@ public class EmprestimoController {
     }
 
     @GetMapping
+    @ApiOperation("Busca um Empréstimo por parâmetros")
     public Page<EmprestimoDto> find(EmprestimoFilterDTO dto, Pageable pageRequest){
         Page<Emprestimo> result = service.find(dto, pageRequest);
         List<EmprestimoDto> lista = result

@@ -6,6 +6,10 @@ import br.com.gile.livrariaapi.model.entity.Emprestimo;
 import br.com.gile.livrariaapi.model.entity.Livro;
 import br.com.gile.livrariaapi.service.EmprestimoService;
 import br.com.gile.livrariaapi.service.LivroService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -22,6 +26,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/livros")
 @RequiredArgsConstructor
+@Api("API de Livro")
 public class LivroController {
 
     private final LivroService service;
@@ -30,6 +35,7 @@ public class LivroController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @ApiOperation("Cria um Livro")
     public LivroDTO create(@RequestBody @Valid LivroDTO dto){
         Livro entidade = modelMapper.map(dto, Livro.class);
         entidade = service.save(entidade);
@@ -37,6 +43,7 @@ public class LivroController {
     }
 
     @GetMapping("{id}")
+    @ApiOperation("Obtém detalhes de um Livro por id")
     public LivroDTO get(@PathVariable Long id){
         return service
                 .getById(id)
@@ -46,12 +53,21 @@ public class LivroController {
 
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ApiOperation("Delete um Livro por id")
+    /*
+    //Exemplo de como alterar as mensagens de erro que aparecem na API
+    @ApiResponses({
+
+            @ApiResponse(code = 204, message = "Livro deletado com sucesso")
+    })
+    */
     public void delete(@PathVariable Long id){
         Livro livro = service.getById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         service.delete(livro);
     }
 
     @PutMapping("{id}")
+    @ApiOperation("Atualiza um Livro por id")
     public LivroDTO update(@PathVariable Long id, LivroDTO dto){
         return service.getById(id).map(livro -> {
             livro.setAutor(dto.getAutor());
@@ -63,6 +79,7 @@ public class LivroController {
     }
 
     @GetMapping
+    @ApiOperation("Busca um Livro por parâmetros")
     public Page<LivroDTO> find(LivroDTO dto, Pageable pageRequest){
         Livro filtro = modelMapper.map(dto,Livro.class);
         Page<Livro> resultado = service.find(filtro,pageRequest);
@@ -73,6 +90,7 @@ public class LivroController {
     }
 
     @GetMapping("{id}/emprestimos")
+    @ApiOperation("Busca os empréstimos pelo id do Livro")
     public Page<EmprestimoDto> emprestimosPorLivro(@PathVariable Long id, Pageable pageable){
         Livro livro = service.getById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         Page<Emprestimo> resultado = emprestimoService.getEmprestimoPorLivro(livro, pageable);
