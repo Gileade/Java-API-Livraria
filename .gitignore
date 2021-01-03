@@ -163,4 +163,4 @@ $RECYCLE.BIN/
 .idea
 *.iml
 
-appfile.log
+appfile.log*
