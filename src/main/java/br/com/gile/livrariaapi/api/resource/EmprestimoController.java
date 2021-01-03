@@ -41,6 +41,7 @@ public class EmprestimoController {
         Emprestimo entidade = Emprestimo.builder()
                             .livro(livro)
                             .cliente(dto.getCliente())
+                            .emailCliente(dto.getEmail())
                             .dataDoEmprestimo(LocalDate.now())
                             .build();
 
